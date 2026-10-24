@@ -1,0 +1,14 @@
+variable "rg-name" {
+    description = "Resource group name"
+    type = string
+}
+
+variable "location" {
+    description = "Azure region"
+    type = string
+}
+
+variable "tags" {
+    description = "Resource group tags"
+    type = map(string)
+}
