@@ -21,7 +21,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
               backendServiceArm: 'global-sc'
               backendAzureRmStorageAccountName: 'backendstg01'
               backendAzureRmContainerName: 'backend-container01'
@@ -33,7 +33,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
               environmentServiceNameAzureRM: 'global-sc'
 
       - job: apply
@@ -42,7 +42,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
               commandOptions: '-auto-approve'
               environmentServiceNameAzureRM: 'global-sc'
           
