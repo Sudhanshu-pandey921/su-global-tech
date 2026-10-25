@@ -31,6 +31,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform'
               environmentServiceNameAzureRM: 'global-sc'
 
       - job: apply
@@ -39,6 +40,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform'
               commandOptions: '-auto-approve'
               environmentServiceNameAzureRM: 'global-sc'
           
