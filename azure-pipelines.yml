@@ -24,4 +24,21 @@ stages:
               backendAzureRmStorageAccountName: 'backendstg01'
               backendAzureRmContainerName: 'backend-container01'
               backendAzureRmKey: 'dev.tfstate'
+
+      - job: Plan
+        steps:
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'global-sc'
+
+      - job: apply
+        steps:
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              commandOptions: '-auto-approve'
+              environmentServiceNameAzureRM: 'global-sc'
           
