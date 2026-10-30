@@ -55,6 +55,17 @@ stages:
     condition: succeeded()
     jobs:
       - job: ApplyJob
+        displayName: Deploy Terraform to Dev
+
+        
+
+        environment: dev
+
+        strategy:
+          runOnce:
+            deploy:
+
+         
         steps:
           - checkout: self
 
