@@ -54,39 +54,39 @@ stages:
     dependsOn: Plan
     condition: succeeded()
     jobs:
-      - job: ApplyJob
+      - deployment: ApplyJob
         displayName: Deploy Terraform to Dev
 
         
 
-        environment: dev
+        environment: Dev
 
         strategy:
           runOnce:
             deploy:
 
          
-        steps:
-          - checkout: self
+             steps:
+              - checkout: self
 
-          - task: TerraformTask@5
-            displayName: Terraform Init for Apply
-            inputs:
-              provider: azurerm
-              command: init
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
-              backendServiceArm: global-sc
-              backendAzureRmStorageAccountName: backendstg01
-              backendAzureRmContainerName: backend-container01
-              backendAzureRmKey: dev.tfstate
+              - task: TerraformTask@5
+                displayName: Terraform Init for Apply
+                inputs:
+                  provider: azurerm
+                  command: init
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                  backendServiceArm: global-sc
+                  backendAzureRmStorageAccountName: backendstg01
+                  backendAzureRmContainerName: backend-container01
+                  backendAzureRmKey: dev.tfstate
 
-          - task: TerraformTask@5
-            displayName: Terraform Apply
-            inputs:
-              provider: azurerm
-              command: apply
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
-              commandOptions: '-auto-approve'
-              environmentServiceNameAzureRM: global-sc
+              - task: TerraformTask@5
+                displayName: Terraform Apply
+                inputs:
+                  provider: azurerm
+                  command: apply
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                  commandOptions: '-auto-approve'
+                  environmentServiceNameAzureRM: global-sc
 
           
