@@ -1,0 +1,58 @@
+trigger: none
+
+pool:
+  name: global-pool
+
+stages:
+  - stage: Init
+    displayName: Terraform Init
+    jobs:
+      - job: InitJob
+        steps:
+          - checkout: self
+
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: azurerm
+              command: init
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              backendServiceArm: global-sc
+              backendAzureRmStorageAccountName: backendstg01
+              backendAzureRmContainerName: backend-container01
+              backendAzureRmKey: dev.tfstate
+
+  - stage: Plan
+    displayName: Terraform Plan
+    dependsOn: Init
+    jobs:
+      - job: PlanJob
+        steps:
+          - checkout: self
+
+          - task: TerraformTask@5
+            displayName: Terraform Init for Plan
+            inputs:
+              provider: azurerm
+              command: init
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              backendServiceArm: global-sc
+              backendAzureRmStorageAccountName: backendstg01
+              backendAzureRmContainerName: backend-container01
+              backendAzureRmKey: dev.tfstate
+
+          - task: TerraformTask@5
+            displayName: Terraform Plan
+            inputs:
+              provider: azurerm
+              command: plan
+              commandOptions: '-out=tfplan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              environmentServiceNameAzureRM: global-sc
+
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Terraform Artifact
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/azure-platform'
+              ArtifactName: 'terraform-drop'
+              publishLocation: 'Container'
