@@ -1,9 +1,103 @@
+# trigger: none
+
+# pool:
+#   name: global-pool
+
+# stages:
+#   - stage: Init
+#     displayName: Terraform Init
+#     jobs:
+#       - job: InitJob
+#         steps:
+#           - checkout: self
+
+#           - task: TerraformTask@5
+#             displayName: Terraform Init
+#             inputs:
+#               provider: azurerm
+#               command: init
+#               workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+#               backendServiceArm: global-sc
+#               backendAzureRmStorageAccountName: backendstg01
+#               backendAzureRmContainerName: backend-container01
+#               backendAzureRmKey: dev.tfstate
+
+#   - stage: Plan
+#     displayName: Terraform Plan
+#     dependsOn: Init
+#     jobs:
+#       - job: PlanJob
+#         steps:
+#           - checkout: self
+
+#           - task: TerraformTask@5
+#             displayName: Terraform Init for Plan
+#             inputs:
+#               provider: azurerm
+#               command: init
+#               workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+#               backendServiceArm: global-sc
+#               backendAzureRmStorageAccountName: backendstg01
+#               backendAzureRmContainerName: backend-container01
+#               backendAzureRmKey: dev.tfstate
+
+#           - task: TerraformTask@5
+#             displayName: Terraform Plan
+#             inputs:
+#               provider: azurerm
+#               command: plan
+#               workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+#               environmentServiceNameAzureRM: global-sc
+
+#   - stage: Apply
+#     displayName: Terraform Apply
+#     dependsOn: Plan
+#     condition: succeeded()
+#     jobs:
+#       - deployment: ApplyJob
+#         displayName: Deploy Terraform to Dev
+
+        
+
+#         environment: Dev
+
+#         strategy:
+#           runOnce:
+#             deploy:
+
+         
+#              steps:
+#               - checkout: self
+
+#               - task: TerraformTask@5
+#                 displayName: Terraform Init for Apply
+#                 inputs:
+#                   provider: azurerm
+#                   command: init
+#                   workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+#                   backendServiceArm: global-sc
+#                   backendAzureRmStorageAccountName: backendstg01
+#                   backendAzureRmContainerName: backend-container01
+#                   backendAzureRmKey: dev.tfstate
+
+#               - task: TerraformTask@5
+#                 displayName: Terraform Apply
+#                 inputs:
+#                   provider: azurerm
+#                   command: apply
+#                   workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+#                   commandOptions: '-auto-approve'
+#                   environmentServiceNameAzureRM: global-sc
+
+
 trigger: none
 
 pool:
   name: global-pool
 
 stages:
+
+  # 1. Terraform Init Stage
   - stage: Init
     displayName: Terraform Init
     jobs:
@@ -22,6 +116,8 @@ stages:
               backendAzureRmContainerName: backend-container01
               backendAzureRmKey: dev.tfstate
 
+
+  # 2. Terraform Plan Stage
   - stage: Plan
     displayName: Terraform Plan
     dependsOn: Init
@@ -30,6 +126,7 @@ stages:
         steps:
           - checkout: self
 
+          # Terraform Init
           - task: TerraformTask@5
             displayName: Terraform Init for Plan
             inputs:
@@ -41,6 +138,18 @@ stages:
               backendAzureRmContainerName: backend-container01
               backendAzureRmKey: dev.tfstate
 
+          # TFLint Installation/Version Check and Linting
+          - task: PowerShell@2
+            displayName: Terraform Linting - TFLint
+            inputs:
+              targetType: inline
+              script: |
+                cd "$(System.DefaultWorkingDirectory)/azure-platform"
+                tflint --version
+                tflint --init
+                tflint --recursive
+
+          # Terraform Plan
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
@@ -49,6 +158,8 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
               environmentServiceNameAzureRM: global-sc
 
+
+  # 3. Terraform Apply Stage
   - stage: Apply
     displayName: Terraform Apply
     dependsOn: Plan
@@ -57,36 +168,33 @@ stages:
       - deployment: ApplyJob
         displayName: Deploy Terraform to Dev
 
-        
-
         environment: Dev
 
         strategy:
           runOnce:
             deploy:
+              steps:
+                - checkout: self
 
+                # Terraform Init
+                - task: TerraformTask@5
+                  displayName: Terraform Init for Apply
+                  inputs:
+                    provider: azurerm
+                    command: init
+                    workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                    backendServiceArm: global-sc
+                    backendAzureRmStorageAccountName: backendstg01
+                    backendAzureRmContainerName: backend-container01
+                    backendAzureRmKey: dev.tfstate
+
+                # Terraform Apply
+                - task: TerraformTask@5
+                  displayName: Terraform Apply
+                  inputs:
+                    provider: azurerm
+                    command: apply
+                    workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                    commandOptions: '-auto-approve'
+                    environmentServiceNameAzureRM: global-sc
          
-             steps:
-              - checkout: self
-
-              - task: TerraformTask@5
-                displayName: Terraform Init for Apply
-                inputs:
-                  provider: azurerm
-                  command: init
-                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
-                  backendServiceArm: global-sc
-                  backendAzureRmStorageAccountName: backendstg01
-                  backendAzureRmContainerName: backend-container01
-                  backendAzureRmKey: dev.tfstate
-
-              - task: TerraformTask@5
-                displayName: Terraform Apply
-                inputs:
-                  provider: azurerm
-                  command: apply
-                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
-                  commandOptions: '-auto-approve'
-                  environmentServiceNameAzureRM: global-sc
-
-          
