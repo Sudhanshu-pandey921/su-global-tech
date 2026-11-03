@@ -53,6 +53,6 @@ stages:
           - task: PublishBuildArtifacts@1
             displayName: Publish Terraform Artifact
             inputs:
-              PathtoPublish: '$(System.DefaultWorkingDirectory)/azure-platform'
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
               ArtifactName: 'terraform-drop'
               publishLocation: 'Container'
