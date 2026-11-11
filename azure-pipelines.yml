@@ -3,6 +3,16 @@ trigger: none
 pool:
   name: global-pool
 
+parameters:
+  - name: environment
+    displayName: select environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - prod
+      - qa
+
 stages:
   - stage: Init
     displayName: Terraform Init
@@ -16,7 +26,7 @@ stages:
             inputs:
               provider: azurerm
               command: init
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/${{ parameters.environment }}'
               backendServiceArm: global-sc
               backendAzureRmStorageAccountName: backendstg01
               backendAzureRmContainerName: backend-container01
@@ -35,7 +45,7 @@ stages:
             inputs:
               provider: azurerm
               command: init
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/${{ parameters.environment }}'
               backendServiceArm: global-sc
               backendAzureRmStorageAccountName: backendstg01
               backendAzureRmContainerName: backend-container01
@@ -46,7 +56,7 @@ stages:
             inputs:
               provider: azurerm
               command: plan
-              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/${{ parameters.environment }}'
               environmentServiceNameAzureRM: global-sc
 
   - stage: Apply
@@ -74,7 +84,7 @@ stages:
                 inputs:
                   provider: azurerm
                   command: init
-                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/${{ parameters.environment }}'
                   backendServiceArm: global-sc
                   backendAzureRmStorageAccountName: backendstg01
                   backendAzureRmContainerName: backend-container01
@@ -85,7 +95,7 @@ stages:
                 inputs:
                   provider: azurerm
                   command: apply
-                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/dev'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/azure-platform/environments/${{ parameters.environment }}'
                   commandOptions: '-auto-approve'
                   environmentServiceNameAzureRM: global-sc
 
