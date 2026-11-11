@@ -14,23 +14,23 @@ parameters: #environment, action, location, vmSize, anyResource, stateKey, tfVer
       - qa
 
 
-  - name: action
-    displayName: select action
-    type: string
-    default: plan
-    values:
-      - plan
-      - apply
-      - destroy
+  # - name: action
+  #   displayName: select action
+  #   type: string
+  #   default: plan
+  #   values:
+  #     - plan
+  #     - apply
+  #     - destroy
 
-  - name: vmSize
-    displayName: select vm size
-    type: string
-    default: Standard_B2s
-    values:
-      - Standard_B2s
-      - Standard_D2s_v5
-      - Standard_D4s_v5
+  # - name: vmSize
+  #   displayName: select vm size
+  #   type: string
+  #   default: Standard_B2s
+  #   values:
+  #     - Standard_B2s
+  #     - Standard_D2s_v5
+  #     - Standard_D4s_v5
     
 
 stages:
