@@ -5,7 +5,7 @@ pool:
 
 parameters: #environment, action, location, vmSize, anyResource, stateKey, tfVersion
   - name: environment
-    displayName: select environment
+    displayName: select lata environment
     type: string
     default: dev
     values:
