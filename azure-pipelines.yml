@@ -3,7 +3,7 @@ trigger: none
 pool:
   name: global-pool
 
-parameters:
+parameters: #environment, action, location, vmSize, anyResource, stateKey, tfVersion
   - name: environment
     displayName: select environment
     type: string
